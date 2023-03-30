@@ -7,8 +7,8 @@ import (
 
 	"github.com/streadway/amqp"
 
-	"github.com/evrone/go-clean-template/pkg/logger"
-	rmqrpc "github.com/evrone/go-clean-template/pkg/rabbitmq/rmq_rpc"
+	"shop365-products-api/pkg/logger"
+	rmqrpc "shop365-products-api/pkg/rabbitmq/rmq_rpc"
 )
 
 const (

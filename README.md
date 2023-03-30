@@ -5,9 +5,9 @@
 
 Clean Architecture template for Golang services
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/evrone/go-clean-template)](https://goreportcard.com/report/github.com/evrone/go-clean-template)
-[![License](https://img.shields.io/github/license/evrone/go-clean-template.svg)](https://github.com/evrone/go-clean-template/blob/master/LICENSE)
-[![Release](https://img.shields.io/github/v/release/evrone/go-clean-template.svg)](https://github.com/evrone/go-clean-template/releases/)
+[![Go Report Card](https://goreportcard.com/badge/shop365-products-api)](https://goreportcard.com/report/shop365-products-api)
+[![License](https://img.shields.io/github/license/evrone/go-clean-template.svg)](https://shop365-products-api/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/v/release/evrone/go-clean-template.svg)](https://shop365-products-api/releases/)
 [![codecov](https://codecov.io/gh/evrone/go-clean-template/branch/master/graph/badge.svg?token=XE3E0X3EVQ)](https://codecov.io/gh/evrone/go-clean-template)
 
 ## Overview

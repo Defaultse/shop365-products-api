@@ -1,6 +1,6 @@
 linters-settings:
   gci:
-    local-prefixes: github.com/evrone/go-clean-template
+    local-prefixes: shop365-products-api
   dupl:
     threshold: 100
   errorlint:

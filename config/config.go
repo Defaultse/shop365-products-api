@@ -9,11 +9,12 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		HTTP `yaml:"http"`
-		Log  `yaml:"logger"`
-		PG   `yaml:"postgres"`
-		RMQ  `yaml:"rabbitmq"`
+		App   `yaml:"app"`
+		HTTP  `yaml:"http"`
+		Log   `yaml:"logger"`
+		PG    `yaml:"postgres"`
+		MONGO `yaml:"mongo"`
+		// RMQ  `yaml:"rabbitmq"`
 	}
 
 	// App -.
@@ -35,15 +36,21 @@ type (
 	// PG -.
 	PG struct {
 		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		URL     string `env-required:"true"                 env:"PG_URL"`
+		URL     string `env-required:"true" yaml:"url" env:"PG_URL"`
+	}
+
+	MONGO struct {
+		URL      string `yaml:"url"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
 	}
 
 	// RMQ -.
-	RMQ struct {
-		ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
-		ClientExchange string `env-required:"true" yaml:"rpc_client_exchange" env:"RMQ_RPC_CLIENT"`
-		URL            string `env-required:"true"                            env:"RMQ_URL"`
-	}
+	// RMQ struct {
+	// 	ServerExchange string `env-required:"true" yaml:"rpc_server_exchange" env:"RMQ_RPC_SERVER"`
+	// 	ClientExchange string `env-required:"true" yaml:"rpc_client_exchange" env:"RMQ_RPC_CLIENT"`
+	// 	URL            string `env-required:"true"                            env:"RMQ_URL"`
+	// }
 )
 
 // NewConfig returns app config.

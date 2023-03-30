@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/streadway/amqp"
 
-	rmqrpc "github.com/evrone/go-clean-template/pkg/rabbitmq/rmq_rpc"
+	rmqrpc "shop365-products-api/pkg/rabbitmq/rmq_rpc"
 )
 
 // ErrConnectionClosed -.

@@ -10,8 +10,14 @@ logger:
   rollbar_env: 'go-clean-template'
 
 postgres:
-  pool_max: 2
+  url: 'postgres://root:root@localhost:5432/shop365'
+  pool_max: 5
 
 rabbitmq:
   rpc_server_exchange: 'rpc_server'
   rpc_client_exchange: 'rpc_client'
+
+mongo:
+  url: 'mongodb://root:password@0.0.0.0:27017'
+  username: 'root'
+  password: 'password'

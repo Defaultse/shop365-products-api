@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/evrone/go-clean-template/config"
-	"github.com/evrone/go-clean-template/internal/app"
+	"shop365-products-api/config"
+	"shop365-products-api/internal/app"
 )
 
 func main() {

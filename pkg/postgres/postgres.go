@@ -1,77 +1,73 @@
-// Package postgres implements postgres connection.
+// // Package postgres implements postgres connection.
 package postgres
 
-import (
-	"context"
-	"fmt"
-	"log"
-	"time"
+// import (
+// 	"fmt"
+// 	"time"
 
-	"github.com/Masterminds/squirrel"
-	"github.com/jackc/pgx/v4/pgxpool"
-)
+// 	_ "github.com/jackc/pgx/stdlib"
+// 	"github.com/jmoiron/sqlx"
+// 	"gorm.io/driver/postgres"
+// 	"gorm.io/gorm"
+// )
 
-const (
-	_defaultMaxPoolSize  = 1
-	_defaultConnAttempts = 10
-	_defaultConnTimeout  = time.Second
-)
+// const (
+// 	_defaultMaxPoolSize  = 1
+// 	_defaultConnAttempts = 10
+// 	_defaultConnTimeout  = time.Second
+// )
 
-// Postgres -.
-type Postgres struct {
-	maxPoolSize  int
-	connAttempts int
-	connTimeout  time.Duration
+// // Postgres -.
+// type Postgres struct {
+// 	maxPoolSize  int
+// 	connAttempts int
+// 	connTimeout  time.Duration
+// 	conn         *sqlx.DB
+// }
 
-	Builder squirrel.StatementBuilderType
-	Pool    *pgxpool.Pool
-}
+// // New -.
+// func New(url string, opts ...Option) (*Postgres, error) {
+// 	// conn, err := sqlx.Connect("pgx", url)
+// 	// if err != nil {
+// 	// 	fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+// 	// 	return nil, err
+// 	// }
 
-// New -.
-func New(url string, opts ...Option) (*Postgres, error) {
-	pg := &Postgres{
-		maxPoolSize:  _defaultMaxPoolSize,
-		connAttempts: _defaultConnAttempts,
-		connTimeout:  _defaultConnTimeout,
-	}
+// 	// if err := conn.Ping(); err != nil {
+// 	// 	panic(err)
+// 	// }
 
-	// Custom options
-	for _, opt := range opts {
-		opt(pg)
-	}
+// 	// if err != nil {
+// 	// 	return nil, fmt.Errorf("postgres - NewPostgres - connAttempts == 0: %w", err)
+// 	// }
 
-	pg.Builder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
+// 	db, err := gorm.Open(postgres.New(postgres.Config{
+// 		DSN:                  "user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
+// 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
+// 	}), &gorm.Config{})
 
-	poolConfig, err := pgxpool.ParseConfig(url)
-	if err != nil {
-		return nil, fmt.Errorf("postgres - NewPostgres - pgxpool.ParseConfig: %w", err)
-	}
+// 	if err != nil {
+// 		return nil, fmt.Errorf("postgres - NewPostgres - connAttempts == 0: %w", err)
+// 	}
 
-	poolConfig.MaxConns = int32(pg.maxPoolSize)
+// 	pg := &Postgres{
+// 		maxPoolSize:  _defaultMaxPoolSize,
+// 		connAttempts: _defaultConnAttempts,
+// 		connTimeout:  _defaultConnTimeout,
+// 		pg:           db,
+// 	}
 
-	for pg.connAttempts > 0 {
-		pg.Pool, err = pgxpool.ConnectConfig(context.Background(), poolConfig)
-		if err == nil {
-			break
-		}
+// 	// Custom options
+// 	for _, opt := range opts {
+// 		opt(pg)
+// 	}
 
-		log.Printf("Postgres is trying to connect, attempts left: %d", pg.connAttempts)
+// 	return pg, nil
+// }
 
-		time.Sleep(pg.connTimeout)
-
-		pg.connAttempts--
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("postgres - NewPostgres - connAttempts == 0: %w", err)
-	}
-
-	return pg, nil
-}
-
-// Close -.
-func (p *Postgres) Close() {
-	if p.Pool != nil {
-		p.Pool.Close()
-	}
-}
+// // Close -.
+// func (p *Postgres) Close() {
+// 	if p.conn != nil {
+// 		p.conn.Close()
+// 	}
+// }

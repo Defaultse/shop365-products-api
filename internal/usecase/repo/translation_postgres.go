@@ -1,72 +1,64 @@
 package repo
 
-import (
-	"context"
-	"fmt"
+// const _defaultEntityCap = 64
 
-	"github.com/evrone/go-clean-template/internal/entity"
-	"github.com/evrone/go-clean-template/pkg/postgres"
-)
+// // TranslationRepo -.
+// type TranslationRepo struct {
+// 	*postgres.Postgres
+// }
 
-const _defaultEntityCap = 64
+// // New -.
+// func New(pg *postgres.Postgres) *TranslationRepo {
+// 	return &TranslationRepo{pg}
+// }
 
-// TranslationRepo -.
-type TranslationRepo struct {
-	*postgres.Postgres
-}
+// // GetHistory -.
+// func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
+// 	sql, _, err := r.Builder.
+// 		Select("source, destination, original, translation").
+// 		From("history").
+// 		ToSql()
+// 	if err != nil {
+// 		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Builder: %w", err)
+// 	}
 
-// New -.
-func New(pg *postgres.Postgres) *TranslationRepo {
-	return &TranslationRepo{pg}
-}
+// 	rows, err := r.Pool.Query(ctx, sql)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Pool.Query: %w", err)
+// 	}
+// 	defer rows.Close()
 
-// GetHistory -.
-func (r *TranslationRepo) GetHistory(ctx context.Context) ([]entity.Translation, error) {
-	sql, _, err := r.Builder.
-		Select("source, destination, original, translation").
-		From("history").
-		ToSql()
-	if err != nil {
-		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Builder: %w", err)
-	}
+// 	entities := make([]entity.Translation, 0, _defaultEntityCap)
 
-	rows, err := r.Pool.Query(ctx, sql)
-	if err != nil {
-		return nil, fmt.Errorf("TranslationRepo - GetHistory - r.Pool.Query: %w", err)
-	}
-	defer rows.Close()
+// 	for rows.Next() {
+// 		e := entity.Translation{}
 
-	entities := make([]entity.Translation, 0, _defaultEntityCap)
+// 		err = rows.Scan(&e.Source, &e.Destination, &e.Original, &e.Translation)
+// 		if err != nil {
+// 			return nil, fmt.Errorf("TranslationRepo - GetHistory - rows.Scan: %w", err)
+// 		}
 
-	for rows.Next() {
-		e := entity.Translation{}
+// 		entities = append(entities, e)
+// 	}
 
-		err = rows.Scan(&e.Source, &e.Destination, &e.Original, &e.Translation)
-		if err != nil {
-			return nil, fmt.Errorf("TranslationRepo - GetHistory - rows.Scan: %w", err)
-		}
+// 	return entities, nil
+// }
 
-		entities = append(entities, e)
-	}
+// // Store -.
+// func (r *TranslationRepo) Store(ctx context.Context, t entity.Translation) error {
+// 	sql, args, err := r.Builder.
+// 		Insert("history").
+// 		Columns("source, destination, original, translation").
+// 		Values(t.Source, t.Destination, t.Original, t.Translation).
+// 		ToSql()
+// 	if err != nil {
+// 		return fmt.Errorf("TranslationRepo - Store - r.Builder: %w", err)
+// 	}
 
-	return entities, nil
-}
+// 	_, err = r.Pool.Exec(ctx, sql, args...)
+// 	if err != nil {
+// 		return fmt.Errorf("TranslationRepo - Store - r.Pool.Exec: %w", err)
+// 	}
 
-// Store -.
-func (r *TranslationRepo) Store(ctx context.Context, t entity.Translation) error {
-	sql, args, err := r.Builder.
-		Insert("history").
-		Columns("source, destination, original, translation").
-		Values(t.Source, t.Destination, t.Original, t.Translation).
-		ToSql()
-	if err != nil {
-		return fmt.Errorf("TranslationRepo - Store - r.Builder: %w", err)
-	}
-
-	_, err = r.Pool.Exec(ctx, sql, args...)
-	if err != nil {
-		return fmt.Errorf("TranslationRepo - Store - r.Pool.Exec: %w", err)
-	}
-
-	return nil
-}
+// 	return nil
+// }

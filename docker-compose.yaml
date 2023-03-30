@@ -1,0 +1,18 @@
+version: '3'
+services:
+  app1:
+    build: ./nginx/app1/
+    ports:
+      - "5001:8080"
+  app2:
+    build: ./nginx/app2/
+    ports:
+      - "5002:8080"
+
+  nginx:
+    build: ./nginx/
+    ports:
+      - "8080:80"
+    depends_on:
+      - app1
+      - app2
