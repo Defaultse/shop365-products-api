@@ -1,73 +1,63 @@
-// // Package postgres implements postgres connection.
 package postgres
 
-// import (
-// 	"fmt"
-// 	"time"
+import (
+	"context"
+	"shop365-products-api/config"
 
-// 	_ "github.com/jackc/pgx/stdlib"
-// 	"github.com/jmoiron/sqlx"
-// 	"gorm.io/driver/postgres"
-// 	"gorm.io/gorm"
-// )
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
+)
 
-// const (
-// 	_defaultMaxPoolSize  = 1
-// 	_defaultConnAttempts = 10
-// 	_defaultConnTimeout  = time.Second
-// )
+type ShardNum int
+type shardMap map[ShardNum]*gorm.DB
 
-// // Postgres -.
-// type Postgres struct {
-// 	maxPoolSize  int
-// 	connAttempts int
-// 	connTimeout  time.Duration
-// 	conn         *sqlx.DB
-// }
+const ShardQuantity = 2
 
-// // New -.
-// func New(url string, opts ...Option) (*Postgres, error) {
-// 	// conn, err := sqlx.Connect("pgx", url)
-// 	// if err != nil {
-// 	// 	fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-// 	// 	return nil, err
-// 	// }
+const (
+	Shard1 ShardNum = iota + 1
+	Shard2
+)
 
-// 	// if err := conn.Ping(); err != nil {
-// 	// 	panic(err)
-// 	// }
+type Postgres struct {
+	ShardMap shardMap
+}
 
-// 	// if err != nil {
-// 	// 	return nil, fmt.Errorf("postgres - NewPostgres - connAttempts == 0: %w", err)
-// 	// }
+func NewPostgres(ctx context.Context, configs config.PG) (*Postgres, error) {
+	postgres := &Postgres{
+		ShardMap: initShardMap(ctx, configs),
+	}
 
-// 	db, err := gorm.Open(postgres.New(postgres.Config{
-// 		DSN:                  "user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
-// 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
-// 	}), &gorm.Config{})
+	return postgres, nil
+}
 
-// 	if err != nil {
-// 		return nil, fmt.Errorf("postgres - NewPostgres - connAttempts == 0: %w", err)
-// 	}
+func initShardMap(ctx context.Context, configs config.PG) shardMap {
+	var m = shardMap{
+		Shard1: discoveryShard(ctx, configs.URL),
+		Shard2: discoveryShard(ctx, configs.URL2),
+	}
 
-// 	pg := &Postgres{
-// 		maxPoolSize:  _defaultMaxPoolSize,
-// 		connAttempts: _defaultConnAttempts,
-// 		connTimeout:  _defaultConnTimeout,
-// 		pg:           db,
-// 	}
+	return m
+}
 
-// 	// Custom options
-// 	for _, opt := range opts {
-// 		opt(pg)
-// 	}
+func discoveryShard(ctx context.Context, dsn string) *gorm.DB {
+	pgClient, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			NoLowerCase: true,
+		},
+	})
 
-// 	return pg, nil
-// }
+	if err != nil {
+		panic(err)
+	}
 
-// // Close -.
-// func (p *Postgres) Close() {
-// 	if p.conn != nil {
-// 		p.conn.Close()
-// 	}
-// }
+	sqlDB, err := pgClient.DB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	sqlDB.SetMaxOpenConns(5)
+
+	return pgClient
+}

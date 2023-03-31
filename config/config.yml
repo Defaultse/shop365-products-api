@@ -11,7 +11,10 @@ logger:
 
 postgres:
   url: 'postgres://root:root@localhost:5432/shop365'
+  url2: 'postgres://root:root@localhost:5432/shop365-1'
   pool_max: 5
+
+
 
 rabbitmq:
   rpc_server_exchange: 'rpc_server'

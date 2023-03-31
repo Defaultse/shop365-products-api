@@ -1,12 +1,14 @@
 package repo
 
-import "gorm.io/gorm"
+import (
+	"shop365-products-api/pkg/postgres"
+)
 
 type ProductRepo struct {
-	postgres *gorm.DB
+	postgres *postgres.Postgres
 }
 
-func NewProductRepo(postgres *gorm.DB) *ProductRepo {
+func NewProductRepo(postgres *postgres.Postgres) *ProductRepo {
 	return &ProductRepo{
 		postgres: postgres,
 	}

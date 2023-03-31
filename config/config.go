@@ -37,6 +37,7 @@ type (
 	PG struct {
 		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		URL     string `env-required:"true" yaml:"url" env:"PG_URL"`
+		URL2    string `env-required:"true" yaml:"url2" env:"PG_URL2"`
 	}
 
 	MONGO struct {

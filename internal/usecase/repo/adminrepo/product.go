@@ -2,20 +2,20 @@ package adminrepo
 
 import (
 	"fmt"
+	"hash/fnv"
 	"shop365-products-api/internal/dto/admindto"
 	"shop365-products-api/internal/entity"
 	"shop365-products-api/internal/entity/adminentity"
-
-	"gorm.io/gorm"
+	"shop365-products-api/pkg/postgres"
 )
 
 type AdminProductRepo struct {
-	postgres *gorm.DB
+	postgres postgres.Postgres
 }
 
-func NewAdminProductRepo(postgres *gorm.DB) *AdminProductRepo {
+func NewAdminProductRepo(postgres *postgres.Postgres) *AdminProductRepo {
 	return &AdminProductRepo{
-		postgres: postgres,
+		postgres: *postgres,
 	}
 }
 
@@ -29,10 +29,20 @@ func (pr *AdminProductRepo) Create(p *admindto.Product) error {
 		},
 	}
 
-	if err := pr.postgres.Create(product).Error; err != nil {
+	selectedShard := hash(product.Name)%postgres.ShardQuantity + 1
+
+	fmt.Println(selectedShard)
+
+	if err := pr.postgres.ShardMap[postgres.ShardNum(selectedShard)].Create(product).Error; err != nil {
 		fmt.Println(err)
 		return err
 	}
 
 	return nil
+}
+
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
 }

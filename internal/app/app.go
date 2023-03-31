@@ -14,9 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 
 	"shop365-products-api/config"
 	v1 "shop365-products-api/internal/controller/http/v1"
@@ -27,6 +24,7 @@ import (
 	"shop365-products-api/internal/validator"
 	"shop365-products-api/pkg/httpserver"
 	"shop365-products-api/pkg/logger"
+	"shop365-products-api/pkg/postgres"
 )
 
 // Run creates objects via constructors.
@@ -34,12 +32,10 @@ func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 	v := validator.NewValidator()
 
+	a := cfg.PG
+	fmt.Println(a)
 	// Connecting to postgres
-	pgClient, err := gorm.Open(postgres.Open(cfg.PG.URL), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			NoLowerCase: true,
-		},
-	})
+	pgMaps, err := postgres.NewPostgres(context.TODO(), cfg.PG)
 	if err != nil {
 		l.Fatal(fmt.Errorf("app - Run - Connecting to postgres: %w", err))
 	}
@@ -72,10 +68,10 @@ func Run(cfg *config.Config) {
 			repo.NewCategoryRepo(mongoClient),
 		),
 		ProductUC: *usecase.NewProductUC(
-			repo.NewProductRepo(pgClient),
+			repo.NewProductRepo(pgMaps),
 		),
 		AdminProductUC: *adminuc.NewProductUC(
-			adminrepo.NewAdminProductRepo(pgClient),
+			adminrepo.NewAdminProductRepo(pgMaps),
 		),
 	}
 
