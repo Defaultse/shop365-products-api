@@ -32,19 +32,11 @@ func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 	v := validator.NewValidator()
 
-	a := cfg.PG
-	fmt.Println(a)
 	// Connecting to postgres
 	pgMaps, err := postgres.NewPostgres(context.TODO(), cfg.PG)
 	if err != nil {
 		l.Fatal(fmt.Errorf("app - Run - Connecting to postgres: %w", err))
 	}
-
-	// sqlDB, err := pgClient.DB()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// sqlDB.SetMaxOpenConns(5)
 
 	// Connecting to mongo
 	mongoCreds := options.Credential{Username: cfg.MONGO.Username, Password: cfg.MONGO.Password}

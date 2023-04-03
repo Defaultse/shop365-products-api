@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"shop365-products-api/internal/usecase"
 
@@ -23,8 +25,7 @@ func NewProductRoutes(handler *gin.RouterGroup, v *validator.Validate, uc usecas
 	h := handler.Group("/product")
 	{
 		h.GET("/", r.allProducts)
-		h.GET("/:id", r.productByID)
-		h.GET("/category/:id", r.productByCategoryID)
+		h.GET("/:id/:shard", r.productByID)
 	}
 }
 
@@ -37,15 +38,36 @@ func (r *ProductRoutes) allProducts(c *gin.Context) {
 	// 	return
 	// }
 
-	r.uc.GetAllProducts()
+	// r.uc.GetAllProducts()
 
 	c.JSON(http.StatusOK, "")
 }
 
 func (r *ProductRoutes) productByID(c *gin.Context) {
+	productID := c.Query("id")
+	shardID := c.Query("shard")
 
-}
+	fmt.Println(12)
 
-func (r *ProductRoutes) productByCategoryID(c *gin.Context) {
+	fmt.Println(productID, shardID)
 
+	productIDint64, err := strconv.ParseInt(productID, 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	shardIDInt64, err := strconv.ParseInt(shardID, 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	product, err := r.uc.GetByID(productIDint64, shardIDInt64)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, product)
 }

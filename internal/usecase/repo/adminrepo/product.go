@@ -2,7 +2,6 @@ package adminrepo
 
 import (
 	"fmt"
-	"hash/fnv"
 	"shop365-products-api/internal/dto/admindto"
 	"shop365-products-api/internal/entity"
 	"shop365-products-api/internal/entity/adminentity"
@@ -29,20 +28,10 @@ func (pr *AdminProductRepo) Create(p *admindto.Product) error {
 		},
 	}
 
-	selectedShard := hash(product.Name)%postgres.ShardQuantity + 1
-
-	fmt.Println(selectedShard)
-
-	if err := pr.postgres.ShardMap[postgres.ShardNum(selectedShard)].Create(product).Error; err != nil {
+	if err := pr.postgres.ShardMap[postgres.ShardNum(postgres.GetShardIDFromHash(product.Name))].Create(product).Error; err != nil {
 		fmt.Println(err)
 		return err
 	}
 
 	return nil
-}
-
-func hash(s string) uint32 {
-	h := fnv.New32a()
-	h.Write([]byte(s))
-	return h.Sum32()
 }

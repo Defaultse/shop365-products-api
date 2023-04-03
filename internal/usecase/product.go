@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"shop365-products-api/internal/entity"
 	"shop365-products-api/internal/usecase/repo"
 )
 
@@ -14,6 +15,6 @@ func NewProductUC(pr *repo.ProductRepo) *ProductUC {
 	}
 }
 
-func (uc *ProductUC) GetAllProducts() {
-	uc.pr.GetAll()
+func (uc *ProductUC) GetByID(productID, shardID int64) (entity.Product, error) {
+	return uc.pr.GetByID(productID, shardID)
 }

@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"fmt"
+	"hash/fnv"
 	"shop365-products-api/config"
 
 	"gorm.io/driver/postgres"
@@ -60,4 +62,15 @@ func discoveryShard(ctx context.Context, dsn string) *gorm.DB {
 	sqlDB.SetMaxOpenConns(5)
 
 	return pgClient
+}
+
+func GetShardIDFromHash(s string) int64 {
+	h := fnv.New64()
+	h.Write([]byte(s))
+
+	selectedShard := h.Sum64()%ShardQuantity + 1
+
+	fmt.Println("----Selected shard num:", selectedShard)
+
+	return int64(selectedShard)
 }

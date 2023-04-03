@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"shop365-products-api/internal/entity"
 	"shop365-products-api/pkg/postgres"
 )
 
@@ -14,6 +15,14 @@ func NewProductRepo(postgres *postgres.Postgres) *ProductRepo {
 	}
 }
 
-func (pr *ProductRepo) GetAll() {
+func (pr *ProductRepo) GetByID(productID, shardID int64) (entity.Product, error) {
+	product := entity.Product{}
 
+	err := pr.postgres.ShardMap[postgres.ShardNum(shardID)].First(&product, productID).Error
+
+	if err != nil {
+		return product, err
+	}
+
+	return product, nil
 }
